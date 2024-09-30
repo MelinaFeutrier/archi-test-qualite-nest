@@ -5,6 +5,7 @@ import OrderController from './presentation/order.controller';
 import { Order } from './domain/entity/order.entity';
 import { OrderItem } from './domain/entity/order-item.entity';
 import CreateOrderService from './domain/use-case/create-order.service';
+import { OrderPaidService } from './domain/use-case/order-pay.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Order, OrderItem])],
@@ -15,7 +16,8 @@ import CreateOrderService from './domain/use-case/create-order.service';
       useClass: OrderRepository,
 
     },
-    CreateOrderService
+    CreateOrderService,
+    OrderPaidService
   ],
 })
 export class OrderModule {}
