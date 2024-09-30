@@ -1,14 +1,11 @@
 import { BadRequestException } from '@nestjs/common';
 
 export default class CreateOrderService {
-  // Méthode publique unique pour traiter la création d'une commande
   public async execute(body: any): Promise<string> {
     this.validateOrder(body);
-    // On pourrait imaginer ici un appel à un repository pour sauvegarder la commande
     return 'Commande créée avec succès';
   }
 
-  // Méthodes privées pour encapsuler la logique métier
   private validateOrder(body: any): void {
     const { customerName, shippingAddress, invoiceAddress, orderItems } = body;
 
