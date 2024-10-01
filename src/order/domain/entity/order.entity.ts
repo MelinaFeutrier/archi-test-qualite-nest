@@ -8,11 +8,19 @@ import {
 } from 'typeorm';
 import { Expose } from 'class-transformer';
 
+export enum OrderStatus {
+  PENDING = 'PENDING',
+  PAID = 'PAID',
+  CANCELLED = 'CANCELLED',
+  SHIPPED = 'SHIPPED',
+}
+
 @Entity()
 export class Order {
   @CreateDateColumn()
   @Expose({ groups: ['group_orders'] })
   createdAt: Date;
+
 
   @PrimaryGeneratedColumn()
   @Expose({ groups: ['group_orders'] })
@@ -52,4 +60,18 @@ export class Order {
   @Column({ nullable: true })
   @Expose({ groups: ['group_orders'] })
   paidAt: Date | null;
+
+  pay(): void {
+    if (this.status !== OrderStatus.PENDING) {
+      throw new Error('La commande ne peut être payée que si son état est PENDING.');
+    }
+
+    if (this.price > 500) {
+      throw new Error('Le montant total de la commande ne peut pas dépasser 500 euros.');
+    }
+
+    this.status = OrderStatus.PAID;
+    this.paidAt = new Date();
+  }
+
 }
