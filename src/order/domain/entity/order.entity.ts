@@ -7,9 +7,12 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Expose } from 'class-transformer';
+import { BadRequestException } from '@nestjs/common';
+import { CreateOrderCommand, ItemDetailCommand } from '../use-case/create-order.service';
 
 export enum OrderStatus {
   PENDING = 'PENDING',
+  SHIPPING_ADDRESS_SET = 'SHIPPING_ADDRESS_SET',
   PAID = 'PAID',
   SHIPPED = 'SHIPPED',
   DELIVERED = 'DELIVERED',
@@ -18,10 +21,10 @@ export enum OrderStatus {
 
 @Entity()
 export class Order {
-  static readonly MAX_ITEMS_FOR_DELIVERY = 3; 
-  static readonly DELIVERY_FEE = 5; 
-  static readonly AMOUNT_MINIMUM = 5; 
-  static readonly AMOUNT_MAXIMUM = 500; 
+  static MAX_ITEMS = 5;
+  static AMOUNT_MINIMUM = 5;
+  static AMOUNT_MAXIMUM = 500;
+  static SHIPPING_COST = 5;
 
   @CreateDateColumn()
   @Expose({ groups: ['group_orders'] })
@@ -59,39 +62,78 @@ export class Order {
 
   @Column()
   @Expose({ groups: ['group_orders'] })
-  status: string;
+  private status: string;
 
   @Column({ nullable: true })
   @Expose({ groups: ['group_orders'] })
-  paidAt: Date | null;
+  private paidAt: Date | null;
+
+  constructor(createOrderCommand: CreateOrderCommand) {
+    const { items, customerName, shippingAddress, invoiceAddress } = createOrderCommand;
+ 
+    // Validation
+    if (!customerName || !items || items.length === 0 || !shippingAddress || !invoiceAddress) {
+      throw new BadRequestException('Missing required fields');
+    }
+ 
+    if (items.length > Order.MAX_ITEMS) {
+      throw new BadRequestException('Cannot create order with more than 5 items');
+    }
+ 
+    const totalAmount = this.calculateOrderAmount(items);
+ 
+    this.customerName = customerName;
+    this.orderItems = items.map(item => {
+      const orderItem = new OrderItem();
+      orderItem.price = item.price;
+      return orderItem;
+    });
+    this.shippingAddress = shippingAddress;
+    this.invoiceAddress = invoiceAddress;
+    this.price = totalAmount;
+    this.status = OrderStatus.PENDING;
+    this.createdAt = new Date();
+  }
+ 
+  private calculateOrderAmount(items: ItemDetailCommand[]): number {
+    const totalAmount = items.reduce((sum, item) => sum + item.price, 0);
+ 
+    if (totalAmount < Order.AMOUNT_MINIMUM) {
+      throw new BadRequestException(
+        `Cannot create order with total amount less than ${Order.AMOUNT_MINIMUM}€`,
+      );
+    }
+ 
+    return totalAmount;
+  }
 
   pay(): void {
     if (this.status !== OrderStatus.PENDING) {
-      throw new Error('La commande ne peut être payée que si son état est PENDING.');
+      throw new Error('Order already paid');
     }
 
     if (this.price > Order.AMOUNT_MAXIMUM) {
-      throw new Error(`Le montant total de la commande ne peut pas dépasser ${Order.AMOUNT_MAXIMUM} euros.`);
+      throw new Error('Order amount exceeds maximum allowed');
     }
 
     this.status = OrderStatus.PAID;
     this.paidAt = new Date();
   }
 
-  addDelivery(shippingAddress: string): void {
-    if (this.orderItems.length <= Order.MAX_ITEMS_FOR_DELIVERY) {
-      throw new Error(`L’ajout de l’adresse de livraison n’est possible que si la commande contient plus de ${Order.MAX_ITEMS_FOR_DELIVERY} items.`);
+  setShippingAddress(customerAddress: string): void {
+    if (this.status !== OrderStatus.PENDING && this.status !== OrderStatus.SHIPPING_ADDRESS_SET) {
+      throw new Error('Order not paid');
     }
-  
-    if (this.status !== OrderStatus.PENDING && !this.shippingAddress) {
-      throw new Error('La livraison est possible que si la commande est en cours ou si l’adresse de livraison a été renseignée.');
+
+    if (this.orderItems.length < Order.MAX_ITEMS) {
+      throw new Error('Too few items');
     }
-  
-    this.shippingAddress = shippingAddress;
-  
-    // Ajout des frais de livraison
-    this.price += Order.DELIVERY_FEE; 
-    this.shippingAddressSetAt = new Date(); 
+
+    this.status = OrderStatus.SHIPPING_ADDRESS_SET;
+    this.shippingAddressSetAt = new Date();
+    this.shippingAddress = customerAddress;
+    this.price += Order.SHIPPING_COST;
   }
-  
+
+
 }

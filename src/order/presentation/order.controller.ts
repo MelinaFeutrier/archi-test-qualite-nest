@@ -1,41 +1,28 @@
-import { Controller, Get, Post, Body, Patch, Param,  } from '@nestjs/common';
-import CreateOrderService from '../domain/use-case/create-order.service';
-import { OrderPaidService } from '../domain/use-case/order-pay.service';
-import { OrderDeliveryService } from '../domain/use-case/delivery-order.service';
+
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Order } from 'src/order/domain/entity/order.entity';
+import {
+  CreateOrderCommand,
+  CreateOrderService,
+} from 'src/order/domain/use-case/create-order.service';
+import { PayOrderService } from 'src/order/domain/use-case/order-pay.service';
 
 @Controller('/orders')
 export default class OrderController {
   constructor(
     private readonly createOrderService: CreateOrderService,
-    private readonly orderPaidService: OrderPaidService,
-    private readonly orderDeliveryService: OrderDeliveryService,
+    private readonly payOrderService: PayOrderService,
   ) {}
-  
 
-  @Get()
-  async getOrders() {
-    return 'All orders';
-  }
-
-  @Post('/create')
+  @Post()
   async createOrder(
-    @Body() body: any
+    @Body() createOrderCommand: CreateOrderCommand,
   ): Promise<string> {
-    return this.createOrderService.createOrder(body);
+    return this.createOrderService.createOrder(createOrderCommand);
   }
 
-  @Post('/:id/pay')
-  async payOrder(@Param('id') id: string): Promise<string> {
-    return this.orderPaidService.markOrderAsPaid(id);
+  @Post()
+  async payOrder(@Param('id') id: string): Promise<Order> {
+    return await this.payOrderService.payOrder(id);
   }
-
-  @Post('/:id/delivery') 
-  async addDeliveryAddress(
-    @Param('id') id: string,
-    @Body('shippingAddress') shippingAddress: string, 
-  ): Promise<string> {
-    return this.orderDeliveryService.addDeliveryAddressToOrder(id, shippingAddress);
-  }
-
-  
 }
