@@ -62,16 +62,26 @@ export class Order {
 
   @Column()
   @Expose({ groups: ['group_orders'] })
-  private status: string;
+  status: string;
 
   @Column({ nullable: true })
   @Expose({ groups: ['group_orders'] })
   private paidAt: Date | null;
 
+  @Column({ nullable: true })
+  @Expose({ groups: ['group_orders'] })
+  cancellationReason: string | null;
+
+  @Column({ nullable: true })
+  @Expose({ groups: ['group_orders'] })
+  cancellationDate: Date | null;
+
   constructor(createOrderCommand: CreateOrderCommand) {
+    if (!createOrderCommand) {
+      return;
+    }
     const { items, customerName, shippingAddress, invoiceAddress } = createOrderCommand;
  
-    // Validation
     if (!customerName || !items || items.length === 0 || !shippingAddress || !invoiceAddress) {
       throw new BadRequestException('Missing required fields');
     }
