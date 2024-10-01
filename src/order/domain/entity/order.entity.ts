@@ -11,16 +11,21 @@ import { Expose } from 'class-transformer';
 export enum OrderStatus {
   PENDING = 'PENDING',
   PAID = 'PAID',
-  CANCELLED = 'CANCELLED',
   SHIPPED = 'SHIPPED',
+  DELIVERED = 'DELIVERED',
+  CANCELED = 'CANCELED',
 }
 
 @Entity()
 export class Order {
+  static readonly MAX_ITEMS_FOR_DELIVERY = 3; 
+  static readonly DELIVERY_FEE = 5; 
+  static readonly AMOUNT_MINIMUM = 5; 
+  static readonly AMOUNT_MAXIMUM = 500; 
+
   @CreateDateColumn()
   @Expose({ groups: ['group_orders'] })
   createdAt: Date;
-
 
   @PrimaryGeneratedColumn()
   @Expose({ groups: ['group_orders'] })
@@ -48,7 +53,6 @@ export class Order {
   @Expose({ groups: ['group_orders'] })
   invoiceAddress: string | null;
 
-
   @Column({ nullable: true })
   @Expose({ groups: ['group_orders'] })
   shippingAddressSetAt: Date | null;
@@ -66,12 +70,28 @@ export class Order {
       throw new Error('La commande ne peut être payée que si son état est PENDING.');
     }
 
-    if (this.price > 500) {
-      throw new Error('Le montant total de la commande ne peut pas dépasser 500 euros.');
+    if (this.price > Order.AMOUNT_MAXIMUM) {
+      throw new Error(`Le montant total de la commande ne peut pas dépasser ${Order.AMOUNT_MAXIMUM} euros.`);
     }
 
     this.status = OrderStatus.PAID;
     this.paidAt = new Date();
   }
 
+  addDelivery(shippingAddress: string): void {
+    if (this.orderItems.length <= Order.MAX_ITEMS_FOR_DELIVERY) {
+      throw new Error(`L’ajout de l’adresse de livraison n’est possible que si la commande contient plus de ${Order.MAX_ITEMS_FOR_DELIVERY} items.`);
+    }
+  
+    if (this.status !== OrderStatus.PENDING && !this.shippingAddress) {
+      throw new Error('La livraison est possible que si la commande est en cours ou si l’adresse de livraison a été renseignée.');
+    }
+  
+    this.shippingAddress = shippingAddress;
+  
+    // Ajout des frais de livraison
+    this.price += Order.DELIVERY_FEE; 
+    this.shippingAddressSetAt = new Date(); 
+  }
+  
 }

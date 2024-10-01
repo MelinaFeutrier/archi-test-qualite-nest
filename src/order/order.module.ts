@@ -6,6 +6,7 @@ import { Order } from './domain/entity/order.entity';
 import { OrderItem } from './domain/entity/order-item.entity';
 import CreateOrderService from './domain/use-case/create-order.service';
 import { OrderPaidService } from './domain/use-case/order-pay.service';
+import { OrderDeliveryService } from './domain/use-case/delivery-order.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Order, OrderItem])],
@@ -17,7 +18,8 @@ import { OrderPaidService } from './domain/use-case/order-pay.service';
 
     },
     CreateOrderService,
-    OrderPaidService
+    OrderPaidService,
+    OrderDeliveryService
   ],
 })
 export class OrderModule {}
