@@ -13,7 +13,7 @@ export class OrderDeliveryService {
     const mockOrder = new Order();
     mockOrder.id = orderId;
     mockOrder.customerName = 'John Doe';
-    mockOrder.shippingAddress = null; // Pas d'adresse de livraison
+    mockOrder.shippingAddress = null; 
     mockOrder.invoiceAddress = '456 Another St';
     mockOrder.orderItems = [
       { id: 'item1', productName: 'Produit 1', quantity: 1, price: 20, order: mockOrder },
@@ -22,7 +22,7 @@ export class OrderDeliveryService {
       { id: 'item4', productName: 'Produit 4', quantity: 3, price: 40, order: mockOrder },
     ];
     mockOrder.price = 100;
-    mockOrder.status = OrderStatus.PENDING; // L'état initial
+    mockOrder.status = OrderStatus.PENDING; 
     mockOrder.createdAt = new Date();
     mockOrder.paidAt = new Date();
     mockOrder.shippingAddressSetAt = null;
@@ -37,7 +37,7 @@ export class OrderDeliveryService {
       throw new NotFoundException(`Commande avec l'ID ${orderId} non trouvée`);
     }
 
-    order.addDelivery(shippingAddress); // Ajout de l'adresse de livraison
+    order.addDelivery(shippingAddress);
 
     return `L'adresse de livraison a été ajoutée à la commande avec l'ID ${orderId}. Le nouveau prix est de ${order.price} euros.`;
   }
