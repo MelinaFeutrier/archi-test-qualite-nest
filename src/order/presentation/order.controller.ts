@@ -5,14 +5,12 @@ import {
 } from 'src/order/domain/entity/order.entity';
 import { CreateOrderService } from 'src/order/domain/use-case/create-order.service';
 import { PayOrderService } from '../domain/use-case/pay-order.service';
-import { OrderManagerService } from '../crado/order-manager.service';
 
 @Controller('/orders')
 export default class OrderController {
   constructor(
     private readonly createOrderService: CreateOrderService,
     private readonly payOrderService: PayOrderService,
-    private readonly orderManagerService: OrderManagerService,
   ) {}
 
   @Post()
@@ -26,8 +24,5 @@ export default class OrderController {
   async payOrder(@Param('id') id: string): Promise<Order> {
     return await this.payOrderService.execute(id);
   }
-  @Post(':id/process')
-  async processOrder(@Param('id') orderId: string): Promise<void> {
-    await this.orderManagerService.processOrder(orderId);
-  }
+
 }
