@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Order } from 'src/order/domain/entity/order.entity';
 import { EmailService } from './email.service';
-import { ValidationOrderService } from './validation-order.service'; // Assurez-vous que le chemin est correct
 import { SmsService } from './sms.service';
 
 @Injectable()
@@ -13,7 +12,6 @@ export class OrderManagerService {
     private readonly orderRepository: Repository<Order>,
     private readonly emailService: EmailService,
     private readonly smsService: SmsService,
-    private readonly validationOrderService: ValidationOrderService, 
   ) {}
 
   async processOrder(orderId: string): Promise<void> {

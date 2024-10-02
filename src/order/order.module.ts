@@ -7,7 +7,6 @@ import { CreateOrderService } from './domain/use-case/create-order.service';
 import { PayOrderService } from './domain/use-case/pay-order.service';
 import { OrderManagerService } from './crado/order-manager.service';
 import { SmsService } from './crado/sms.service';
-import { ValidationOrderService } from './crado/validation-order.service';
 import { EmailService } from './crado/email.service';
 
 
@@ -18,7 +17,6 @@ import { EmailService } from './crado/email.service';
     PayOrderService, 
     OrderManagerService, 
     SmsService, 
-    ValidationOrderService,
     EmailService],
 })
 export class OrderModule {}
