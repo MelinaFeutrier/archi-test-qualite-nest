@@ -13,7 +13,7 @@ export class OrderManagerService {
     private readonly orderRepository: Repository<Order>,
     private readonly emailService: EmailService,
     private readonly smsService: SmsService,
-    private readonly validationOrderService: ValidationOrderService, // Injecte le service de validation
+    private readonly validationOrderService: ValidationOrderService, 
   ) {}
 
   async processOrder(orderId: string): Promise<void> {
@@ -23,16 +23,14 @@ export class OrderManagerService {
       throw new BadRequestException(`Order with ID ${orderId} not found`);
     }
 
-    // Utilisation du service de validation pour valider la commande
-    this.validationOrderService.validateOrder(order);
+    if (!order.isValid()) {
+        throw new Error('Order validation failed');
+    }
 
-    // Envoi de l'email de confirmation de commande
     await this.emailService.sendOrderConfirmation(order);
 
-    // Envoi de la confirmation par SMS
     await this.smsService.sendOrderConfirmation(order);
 
-    // Sauvegarde de l'état de la commande
     await this.orderRepository.save(order);
   }
 }
