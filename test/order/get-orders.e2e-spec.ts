@@ -4,7 +4,7 @@ import * as request from 'supertest';
 import { AppModule } from './../../src/app.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Order } from '../../src/order/domain/entity/order.entity';
+import { Order } from '../../src/crado/domain/entity/order.entity';
 
 describe('Get Orders (e2e)', () => {
   let app: INestApplication;

@@ -1,6 +1,6 @@
 import { NotFoundException } from '@nestjs/common';
-import { Order } from 'src/order/domain/entity/order.entity';
 import OrderRepository from 'src/order/infrastructure/order.repository';
+import { Order } from '../entity/order.entity';
 
 export class SetInvoiceAddressOrderService {
   constructor(private readonly orderRepository: OrderRepository) {}

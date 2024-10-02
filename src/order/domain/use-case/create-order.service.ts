@@ -1,7 +1,6 @@
 import {
   CreateOrderCommand,
-  Order,
-} from 'src/order/domain/entity/order.entity';
+  Order,} from '../entity/order.entity';
 import OrderRepository from 'src/order/infrastructure/order.repository';
 
 export class CreateOrderService {
