@@ -234,7 +234,7 @@ export class Order {
   }
 
   getInvoiceData() {
-    if (this.status !== OrderStatus.PAID && this.status !== OrderStatus.SHIPPED && this.status !== OrderStatus.DELIVERED) {
+    if (this.status === OrderStatus.PAID || this.status === OrderStatus.SHIPPED || this.status === OrderStatus.DELIVERED) {
       throw new Error("Order cannot be processed because it is already paid, shipped, or delivered");
     }
     return {
