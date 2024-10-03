@@ -98,7 +98,7 @@ export class Order {
   @Column({ nullable: true })
   @Expose({ groups: ['group_orders'] })
   customerEmail: string;  
-  
+
   @Column({ nullable: true })
   @Expose({ groups: ['group_orders'] })
   customerPhoneNumber: string;
@@ -234,6 +234,9 @@ export class Order {
   }
 
   getInvoiceData() {
+    if (this.status !== OrderStatus.PAID && this.status !== OrderStatus.SHIPPED && this.status !== OrderStatus.DELIVERED) {
+      throw new Error("Order cannot be processed because it is already paid, shipped, or delivered");
+    }
     return {
       orderId: this.id,
       items: this.orderItems.map(item => ({
