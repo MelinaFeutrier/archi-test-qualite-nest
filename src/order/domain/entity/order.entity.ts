@@ -228,4 +228,9 @@ export class Order {
       .join(', ');
     return `invoice number ${this.id}, with items: ${itemsNames}`;
   }
+
+  public setStatus(status: string): void {
+    this.status = status;
+  }
+ 
 }

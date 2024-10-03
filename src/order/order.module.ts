@@ -12,7 +12,8 @@ import OrderRepositoryTypeOrm from 'src/order/infrastructure/persistance/order.r
 import { GenerateInvoiceService } from 'src/order/application/use-case/generate-invoice.service';
 import { PdfGeneratorServiceInterface } from 'src/order/domain/port/pdf/pdf-generator.service.interface';
 import { PdfGeneratorService } from 'src/order/infrastructure/pdf/pdf-generator.service';
-import { OrderRepositoryInterface } from './domain/port/order.repository.interface';
+import { OrderRepositoryInterface } from 'src/order/domain/port/persistance/order.repository.interface';
+
 
 @Module({
   imports: [TypeOrmModule.forFeature([Order, OrderItem])],

@@ -1,9 +1,9 @@
 import { CreateOrderService } from '../use-case/create-order.service';
 import { OrderRepositoryInterface } from '../../domain/port/persistance/order.repository.interface';
-import { BadRequestException } from '@nestjs/common';
+import { Order } from '../../domain/entity/order.entity';
 
 class OrderRepositoryFake {
-  async save(order) {
+  async save(order: Order): Promise<Order> {
     return order;
   }
 }
