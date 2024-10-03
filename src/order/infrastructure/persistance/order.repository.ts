@@ -1,9 +1,9 @@
 import { InjectDataSource } from '@nestjs/typeorm';
+import { Order } from 'src/order/domain/entity/order.entity';
+import { OrderRepositoryInterface } from 'src/order/domain/port/persistance/order.repository.interface';
 import { DataSource, Repository } from 'typeorm';
-import { OrderRepositoryInterface } from 'src/order/domain/port/order.repository.interface';
-import { Order } from '../../domain/entity/order.entity';
 
-export default class OrderRepository
+export default class OrderRepositoryTypeOrm
   extends Repository<Order>
   implements OrderRepositoryInterface
 {
