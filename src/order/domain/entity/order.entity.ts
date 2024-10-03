@@ -44,17 +44,6 @@ export class Order {
   static AMOUNT_MAXIMUM = 500;
  
   static SHIPPING_COST = 5;
-
-  getInvoiceData() {
-    return {
-      orderId: this.id,
-      items: this.orderItems.map(item => ({
-        name: item.productName,
-        quantity: item.quantity,
-        price: item.price,
-      })),
-    };
-  }
  
   @CreateDateColumn()
   @Expose({ groups: ['group_orders'] })
@@ -109,6 +98,7 @@ export class Order {
   @Column({ nullable: true })
   @Expose({ groups: ['group_orders'] })
   customerEmail: string;  
+  
   @Column({ nullable: true })
   @Expose({ groups: ['group_orders'] })
   customerPhoneNumber: string;
@@ -241,6 +231,17 @@ export class Order {
     this.status = OrderStatus.CANCELED;
     this.cancelAt = new Date('NOW');
     this.cancelReason = cancelReason;
+  }
+
+  getInvoiceData() {
+    return {
+      orderId: this.id,
+      items: this.orderItems.map(item => ({
+        name: item.productName,
+        quantity: item.quantity,
+        price: item.price,
+      })),
+    };
   }
 }
  
