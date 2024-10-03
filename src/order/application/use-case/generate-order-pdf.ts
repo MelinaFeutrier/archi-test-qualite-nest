@@ -1,4 +1,3 @@
-// src/order/application/use-case/generate-order-pdf.usecase.ts
 import { Injectable } from '@nestjs/common';
 import { OrderRepositoryInterface } from '../../domain/port/order.repository.interface';
 import { PdfGeneratorInterface } from '../../domain/port/pdf-generator.interface';
