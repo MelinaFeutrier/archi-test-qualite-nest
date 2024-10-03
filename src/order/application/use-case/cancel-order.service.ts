@@ -1,7 +1,6 @@
 import { NotFoundException } from '@nestjs/common';
-import OrderRepository from 'src/order/infrastructure/order.repository';
-import { Order } from '../entity/order.entity';
-import { OrderRepositoryInterface } from '../port/order.repository.interface';
+import { Order } from 'src/order/domain/entity/order.entity';
+import { OrderRepositoryInterface } from 'src/order/domain/port/order.repository.interface';
 
 export class CancelOrderService {
   constructor(private readonly orderRepository: OrderRepositoryInterface) {}

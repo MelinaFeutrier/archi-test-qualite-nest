@@ -3,8 +3,8 @@ import {
   CreateOrderCommand,
   Order,
 } from 'src/order/domain/entity/order.entity';
-import { CreateOrderService } from 'src/order/domain/use-case/create-order.service';
-import { PayOrderService } from '../domain/use-case/pay-order.service';
+import { CreateOrderService } from '../../application/use-case/create-order.service';
+import { PayOrderService } from '../../application/use-case/pay-order.service';
 
 @Controller('/orders')
 export default class OrderController {

@@ -18,6 +18,10 @@ export interface CreateOrderCommand {
   customerEmail : string;
   customerPhoneNumber : string;
 }
+
+export interface PdfGeneratorInterface {
+  generateOrderPdf(orderId: string, items: OrderItem[]): Promise<Buffer>;
+}
  
 export enum OrderStatus {
   PENDING = 'PENDING',
@@ -40,6 +44,17 @@ export class Order {
   static AMOUNT_MAXIMUM = 500;
  
   static SHIPPING_COST = 5;
+
+  getInvoiceData() {
+    return {
+      orderId: this.id,
+      items: this.orderItems.map(item => ({
+        name: item.productName,
+        quantity: item.quantity,
+        price: item.price,
+      })),
+    };
+  }
  
   @CreateDateColumn()
   @Expose({ groups: ['group_orders'] })
