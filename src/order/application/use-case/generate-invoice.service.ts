@@ -7,7 +7,7 @@ export class GenerateInvoiceService {
     private readonly pdfGeneratorService: PdfGeneratorServiceInterface,
   ) {}
 
-  async generateInvoice(orderId: string): Promise<Buffer> {
+  async generateInvoice(orderId: string){
     const order = await this.orderRepository.findById(orderId);
     if (!order) {
       throw new Error('Order not found');
@@ -15,6 +15,6 @@ export class GenerateInvoiceService {
 
     const invoiceInfos = order.getInvoiceInfos();
 
-    return this.pdfGeneratorService.generatePdf(invoiceInfos);
+    //return this.pdfGeneratorService.generatePdf(invoiceInfos);
   }
 }
