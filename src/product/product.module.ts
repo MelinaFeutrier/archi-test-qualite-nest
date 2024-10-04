@@ -26,7 +26,7 @@ import { PromotionRepositoryInterface } from './domain/port/persistance/promotio
     {
       provide: PromotionService,
       useFactory: (promotionRepository: PromotionRepositoryInterface) => {
-        return new PromotionService(promotionRepository);
+        return new PromotionService(promotionRepository);//il y a une erreur ici mais je compte le corriger
       },
       inject: ['PromotionRepositoryInterface'], 
     },
@@ -77,6 +77,7 @@ import { PromotionRepositoryInterface } from './domain/port/persistance/promotio
     ListProductService,
     DecrementStockService,
     PromotionService, 
+    PromotionRepository
   ],
 })
 export class ProductModule {}
