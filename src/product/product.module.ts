@@ -1,18 +1,35 @@
 import { Module } from '@nestjs/common';
-import { CreateProductService } from './application/use-case/create-product.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { UpdateProductService } from './application/use-case/update-product.service';
 import { DeleteProductService } from './application/use-case/delete-product.service';
 import { ListProductService } from './application/use-case/list-product.service';
 import { ProductRepositoryTypeOrm } from './infrastructure/persistance/product.repository';
-import { UpdateStockService } from './application/use-case/update-stock.service'; 
 import { EmailService } from './infrastructure/presentation/email.service'; 
+import { DecrementStockService } from './application/use-case/decrement-stock.service';
+import { CreateProductService } from './application/use-case/create-product.service';
+import { PromotionRepository } from './infrastructure/persistance/promotion.repository';
+import { PromotionService } from './application/use-case/promotion-product.service';
+import { Promotion } from './domain/entity/promotion.entity';
+import { PromotionRepositoryInterface } from './domain/port/persistance/promotion.repository.interface';
 
 @Module({
+  imports: [TypeOrmModule.forFeature([Promotion])], 
   providers: [
     {
       provide: 'ProductRepositoryInterface',
       useClass: ProductRepositoryTypeOrm, 
-    },  
+    },
+    {
+      provide: 'PromotionRepositoryInterface',
+      useClass: PromotionRepository,
+    },
+    {
+      provide: PromotionService,
+      useFactory: (promotionRepository: PromotionRepositoryInterface) => {
+        return new PromotionService(promotionRepository);
+      },
+      inject: ['PromotionRepositoryInterface'], 
+    },
     {
       provide: CreateProductService,
       useFactory: (productRepository: ProductRepositoryTypeOrm) => {
@@ -42,23 +59,24 @@ import { EmailService } from './infrastructure/presentation/email.service';
       inject: ['ProductRepositoryInterface'],
     },
     {
-      provide: UpdateStockService,
+      provide: DecrementStockService,
       useFactory: (
         productRepository: ProductRepositoryTypeOrm,
         emailService: EmailService,
       ) => {
-        return new UpdateStockService(productRepository, emailService);
+        return new DecrementStockService(productRepository, emailService);
       },
-      inject: ['ProductRepositoryInterface', EmailService],
+      inject: ['ProductRepositoryInterface', EmailService], 
     },
-    EmailService, // Register EmailService as a provider
+    EmailService,
   ],
   exports: [
     CreateProductService,
     UpdateProductService,
     DeleteProductService,
     ListProductService,
-    UpdateStockService, 
+    DecrementStockService,
+    PromotionService, 
   ],
 })
 export class ProductModule {}

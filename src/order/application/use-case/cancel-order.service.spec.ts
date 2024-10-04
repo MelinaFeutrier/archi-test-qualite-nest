@@ -48,7 +48,7 @@ describe('CancelOrderService', () => {
     const createOrderCommand: CreateOrderCommand = {
       customerName: 'John Doe',
       items: [
-        { productName: 'item 1', price: 10, quantity: 1 },
+        {id:'123', productName: 'item 1', price: 10, quantity: 1 },
       ],
       shippingAddress: 'Shipping Address',
       invoiceAddress: 'Invoice Address',
@@ -68,7 +68,7 @@ describe('CancelOrderService', () => {
     const createOrderCommand: CreateOrderCommand = {
       customerName: 'John Doe',
       items: [
-        { productName: 'item 1', price: 10, quantity: 1 },
+        { id:'123', productName: 'item 1', price: 10, quantity: 1 },
       ],
       shippingAddress: 'Shipping Address',
       invoiceAddress: 'Invoice Address',

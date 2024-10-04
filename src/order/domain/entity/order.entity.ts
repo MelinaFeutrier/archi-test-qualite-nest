@@ -9,6 +9,8 @@ import {
 import { Expose } from 'class-transformer';
 
 import { BadRequestException } from '@nestjs/common';
+import { ProductRepositoryInterface } from 'src/product/domain/port/persistance/product.repository.interface';
+import { Promotion } from 'src/product/domain/entity/promotion.entity';
 
 export interface CreateOrderCommand {
   items: ItemDetailCommand[];
@@ -28,6 +30,7 @@ export enum OrderStatus {
 
 @Entity()
 export class Order {
+  private productRepository: ProductRepositoryInterface;
   static MAX_ITEMS = 5;
 
   static AMOUNT_MINIMUM = 5;
@@ -35,6 +38,8 @@ export class Order {
   static AMOUNT_MAXIMUM = 500;
 
   static SHIPPING_COST = 5;
+  @Column({ nullable: true })
+  promotionCode: string | null;
 
   @CreateDateColumn()
   @Expose({ groups: ['group_orders'] })
@@ -86,24 +91,6 @@ export class Order {
   @Expose({ groups: ['group_orders'] })
   private cancelReason: string | null;
 
-  // methode factory : permet de ne pas utiliser le constructor
-  // car le constructor est utilisé par typeorm
-  // public createOrder(createOrderCommand: CreateOrderCommand): Order {
-  //   this.verifyOrderCommandIsValid(createOrderCommand);
-  //   this.verifyMaxItemIsValid(createOrderCommand);
-
-  //   this.orderItems = createOrderCommand.items.map(
-  //     (item) => new OrderItem(item),
-  //   );
-
-  //   this.customerName = createOrderCommand.customerName;
-  //   this.shippingAddress = createOrderCommand.shippingAddress;
-  //   this.invoiceAddress = createOrderCommand.invoiceAddress;
-  //   this.status = OrderStatus.PENDING;
-  //   this.price = this.calculateOrderAmount(createOrderCommand.items);
-
-  //   return this;
-  // }
 
   public constructor(createOrderCommand?: CreateOrderCommand) {
     if (!createOrderCommand) {
@@ -231,6 +218,15 @@ export class Order {
 
   public setStatus(status: string): void {
     this.status = status;
+  }
+
+  applyPromotion(promotion: Promotion): void {
+    if (this.price < promotion.amount) {
+      throw new BadRequestException('Promotion amount exceeds the order total.');
+    }
+
+    this.price -= promotion.amount;
+    this.promotionCode = promotion.code;
   }
  
 }

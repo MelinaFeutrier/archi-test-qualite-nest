@@ -85,6 +85,22 @@ export class Product {
     this.stock = stock ?? 0;
   }
 
+  reduceStock(quantity: number): void {
+    if (quantity <= 0) {
+      throw new BadRequestException("Quantity must be greater than 0.");
+    }
+
+    if (this.stock - quantity < 0) {
+      throw new BadRequestException("Insufficient stock.");
+    }
+
+    this.stock -= quantity;
+  }
+
+  isInStock(): boolean {
+    return this.stock > 0;
+  }
+
   public canBeDeleted(hasOrders: boolean): boolean {
     return !hasOrders;
   }

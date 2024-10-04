@@ -4,19 +4,19 @@ import { OrderRepositoryInterface } from '../../domain/port/persistance/order.re
 import { PayOrderService } from './pay-order.service';
 
 class OrderRepositoryFake {
-    private orders: { [key: string]: Order } = {}; // Utilise un objet pour stocker les commandes par id
+    private orders: { [key: string]: Order } = {}; 
   
     async save(order: Order): Promise<Order> {
-      this.orders[order.id] = order; // Associe l'ID de la commande à l'objet commande
+      this.orders[order.id] = order; 
       return order;
     }
   
     async findById(orderId: string): Promise<Order | null> {
-      return this.orders[orderId] || null; // Retourne la commande si elle existe, sinon null
+      return this.orders[orderId] || null; 
     }
   
     async findAll(): Promise<Order[]> {
-      return Object.values(this.orders); // Retourne toutes les commandes sous forme de tableau
+      return Object.values(this.orders); 
     }
   
     async findByCustomerName(customerName: string): Promise<Order[]> {
@@ -24,7 +24,7 @@ class OrderRepositoryFake {
     }
   
     async deleteOrder(orderId: string): Promise<void> {
-        delete this.orders[orderId]; // Supprime la commande de la liste
+        delete this.orders[orderId];
         }
  
   }
@@ -47,7 +47,7 @@ describe('PayOrderService', () => {
   it("should not be able to pay an order that haven't a pending status", async () => {
     const order = await new CreateOrderService(orderRepositoryFake).execute({
       customerName: 'John Doe',
-      items: [{ productName: 'item 1', price: 10, quantity: 1 }],
+      items: [{ 'id':'123', productName: 'item 1', price: 10, quantity: 1 }],
       shippingAddress: 'Shipping Address',
       invoiceAddress: 'Invoice Address',
     });
@@ -60,7 +60,7 @@ describe('PayOrderService', () => {
   it('should be inferior to 500', async () => {
     const order = await new CreateOrderService(orderRepositoryFake).execute({
       customerName: 'John Doe',
-      items: [{ productName: 'item 1', price: 10, quantity: 1 }],
+      items: [{'id':'123', productName: 'item 1', price: 10, quantity: 1 }],
  
       shippingAddress: 'Shipping Address',
       invoiceAddress: 'Invoice Address',

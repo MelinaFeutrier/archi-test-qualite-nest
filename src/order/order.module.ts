@@ -13,16 +13,22 @@ import { GenerateInvoiceService } from 'src/order/application/use-case/generate-
 import { PdfGeneratorServiceInterface } from 'src/order/domain/port/pdf/pdf-generator.service.interface';
 import { PdfGeneratorService } from 'src/order/infrastructure/pdf/pdf-generator.service';
 import { OrderRepositoryInterface } from 'src/order/domain/port/persistance/order.repository.interface';
-
+import { ProductRepositoryInterface } from 'src/product/domain/port/persistance/product.repository.interface';
+import { EmailServiceInterface } from 'src/product/infrastructure/persistance/email.repository.interface';
+import { EmailService } from 'src/product/infrastructure/presentation/email.service';
+import { PromotionService } from 'src/product/application/use-case/promotion-product.service';
+import { ProductModule } from 'src/product/product.module'; // Import the module containing PromotionService
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Order, OrderItem])],
+  imports: [
+    TypeOrmModule.forFeature([Order, OrderItem]),
+    ProductModule, // Import the module to make PromotionService available
+  ],
   controllers: [OrderController],
-
   providers: [
     OrderRepositoryTypeOrm,
     PdfGeneratorService,
-
+    EmailService,
     {
       provide: GenerateInvoiceService,
       useFactory: (
@@ -33,7 +39,6 @@ import { OrderRepositoryInterface } from 'src/order/domain/port/persistance/orde
       },
       inject: [OrderRepositoryTypeOrm, PdfGeneratorService],
     },
-
     {
       provide: PayOrderService,
       useFactory: (orderRepository: OrderRepositoryInterface) => {
@@ -41,7 +46,6 @@ import { OrderRepositoryInterface } from 'src/order/domain/port/persistance/orde
       },
       inject: [OrderRepositoryTypeOrm],
     },
-
     {
       provide: CancelOrderService,
       useFactory: (orderRepository: OrderRepositoryInterface) => {
@@ -49,7 +53,6 @@ import { OrderRepositoryInterface } from 'src/order/domain/port/persistance/orde
       },
       inject: [OrderRepositoryTypeOrm],
     },
-
     {
       provide: SetInvoiceAddressOrderService,
       useFactory: (orderRepository: OrderRepositoryInterface) => {
@@ -57,7 +60,6 @@ import { OrderRepositoryInterface } from 'src/order/domain/port/persistance/orde
       },
       inject: [OrderRepositoryTypeOrm],
     },
-
     {
       provide: SetShippingAddressOrderService,
       useFactory: (orderRepository: OrderRepositoryInterface) => {
@@ -65,20 +67,22 @@ import { OrderRepositoryInterface } from 'src/order/domain/port/persistance/orde
       },
       inject: [OrderRepositoryTypeOrm],
     },
-
-    // pour pouvoir gérer l'inversion de dépendance
-    // du service CreateOrderService
-    // j'utilise le système de useFactory de nest
     {
-      // quand j'enregistre la classe CreateOrderService
       provide: CreateOrderService,
-      // je demande à Nest Js de créer une instance de cette classe
-      useFactory: (orderRepository: OrderRepositoryInterface) => {
-        return new CreateOrderService(orderRepository);
+      useFactory: (
+        orderRepository: OrderRepositoryInterface,
+        productRepository: ProductRepositoryInterface,
+        emailService: EmailServiceInterface,
+        promotionService: PromotionService, // Add the missing PromotionService
+      ) => {
+        return new CreateOrderService(
+          orderRepository,
+          productRepository,
+          emailService,
+          promotionService, // Pass the promotionService to the constructor
+        );
       },
-      // en lui injectant une instance de OrderRepositoryTypeOrm
-      // à la place de l'interface qui est utilisée dans le constructeur de CreateOrderService
-      inject: [OrderRepositoryTypeOrm],
+      inject: [OrderRepositoryTypeOrm, EmailService, PromotionService], // Inject PromotionService
     },
   ],
 })

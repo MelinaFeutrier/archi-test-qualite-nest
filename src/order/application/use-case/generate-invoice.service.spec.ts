@@ -2,6 +2,8 @@ import { CreateOrderService } from './create-order.service';
 import { Order, OrderStatus } from '../../domain/entity/order.entity';
 import { OrderRepositoryInterface } from '../../domain/port/persistance/order.repository.interface';
 import { GenerateInvoiceService } from './generate-invoice.service';
+import { EmailService } from 'src/product/infrastructure/presentation/email.service';
+import { Product } from 'src/product/domain/entity/product.entity';
 
 
 class OrderRepositoryFake {
@@ -47,9 +49,9 @@ describe('GenerateInvoiceService', () => {
   });
  
   it('should be able to generate an invoice for an order', async () => {
-    const order = await new CreateOrderService(orderRepositoryFake).execute({
+    const order = await new CreateOrderService(orderRepositoryFake, EmailService, Product).execute({
       customerName: 'John Doe',
-      items: [{ productName: 'item 1', price: 10, quantity: 1 }],
+      items: [{ id:'123', productName: 'item 1', price: 10, quantity: 1 }],
       shippingAddress: 'Shipping Address',
       invoiceAddress: 'Invoice Address',
     });
