@@ -104,11 +104,33 @@ export class Order {
       (item) => new OrderItem(item),
     );
 
+    
     this.customerName = createOrderCommand.customerName;
     this.shippingAddress = createOrderCommand.shippingAddress;
     this.invoiceAddress = createOrderCommand.invoiceAddress;
     this.status = OrderStatus.PENDING;
     this.price = this.calculateOrderAmount(createOrderCommand.items);
+  }
+
+  addItem(itemDetail: ItemDetailCommand): void {
+    const existingItem = this.orderItems.find(
+      (item) => item.id === itemDetail.id,
+    );
+
+    if (existingItem) {
+      throw new BadRequestException('Item already exists in the order.');
+    }
+
+    if (this.orderItems.length >= Order.MAX_ITEMS) {
+      throw new BadRequestException(
+        `Cannot add more than ${Order.MAX_ITEMS} items to the order.`,
+      );
+    }
+
+    const newItem = new OrderItem(itemDetail);
+    this.orderItems.push(newItem);
+
+    this.price = this.calculateOrderAmount(this.orderItems);
   }
 
   private verifyMaxItemIsValid(createOrderCommand: CreateOrderCommand) {
@@ -130,6 +152,7 @@ export class Order {
       throw new BadRequestException('Missing required fields');
     }
   }
+
 
   private calculateOrderAmount(items: ItemDetailCommand[]): number {
     const totalAmount = items.reduce((sum, item) => sum + item.price, 0);

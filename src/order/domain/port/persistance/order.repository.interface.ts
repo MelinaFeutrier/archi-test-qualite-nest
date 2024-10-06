@@ -6,4 +6,5 @@ export interface OrderRepositoryInterface {
   findAll(): Promise<Order[]>;
   findByCustomerName(customerName: string): Promise<Order[]>;
   deleteOrder(id: string): Promise<void>;
+  findOrdersByProductId(productId: string): Promise<Order[]>;
 }

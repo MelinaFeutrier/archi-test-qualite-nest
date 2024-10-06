@@ -22,7 +22,7 @@ import { ProductModule } from 'src/product/product.module'; // Import the module
 @Module({
   imports: [
     TypeOrmModule.forFeature([Order, OrderItem]),
-    ProductModule, // Import the module to make PromotionService available
+    ProductModule, 
   ],
   controllers: [OrderController],
   providers: [
@@ -73,16 +73,16 @@ import { ProductModule } from 'src/product/product.module'; // Import the module
         orderRepository: OrderRepositoryInterface,
         productRepository: ProductRepositoryInterface,
         emailService: EmailServiceInterface,
-        promotionService: PromotionService, // Add the missing PromotionService
+        promotionService: PromotionService, 
       ) => {
         return new CreateOrderService(
           orderRepository,
           productRepository,
           emailService,
-          promotionService, // Pass the promotionService to the constructor
+          promotionService, 
         );
       },
-      inject: [OrderRepositoryTypeOrm, EmailService, PromotionService], // Inject PromotionService
+      inject: [OrderRepositoryTypeOrm, EmailService, PromotionService], 
     },
   ],
 })
